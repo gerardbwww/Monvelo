@@ -5,35 +5,34 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import Business.entitie.Moteur;
+import Business.entitie.Equipe;
 import Persistence.Manager.JDBCManager;
 import Persistence.exception.DaoException;
 
-public class MoteurDao implements IDAO<Moteur> {
+public class EquipeDao implements IDAO<Equipe> {
 
-	public static final String sql_selectC = "SELECT * FROM moteur";
-	public static final String sql_selectbyID = "SELECT * FROM moteur WHERE Id = ?";
-	public static final String sql_Insert = "INSERT INTO moteur(Marque, Modele, Cylindree) values (?,?,?)";
-	public static final String sql_updateByID = "UPDATE moteur SET Marque = ?, Modele=?  WHERE id = ?";
-	public static final String sql_deletebyID = "DELETE FROM moteur WHERE id = ?";
+	public static final String sql_selectC = "SELECT * FROM equipe";
+	public static final String sql_selectbyID = "SELECT * FROM equipe WHERE Id = ?";
+	public static final String sql_Insert = "INSERT INTO equipe(name, budget) values (?,?)";
+	public static final String sql_updateByID = "UPDATE equipe SET name = ?, budget=?  WHERE id = ?";
+	public static final String sql_deletebyID = "DELETE FROM equipe WHERE id = ?";
 
 	// -------------------- FINDLIST -------------------------------
-	public List<Moteur> findList() throws DaoException {
+	public List<Equipe> findList() throws DaoException {
 
 		try {
-			List<Moteur> list = new ArrayList<>();
+			List<Equipe> list = new ArrayList<>();
 			Connection cnx = JDBCManager.getInstance().openConection();
 			PreparedStatement sel = cnx.prepareStatement(sql_selectC);
 			ResultSet st = sel.executeQuery();
 
 			while (st.next()) {
-				Long id = st.getLong("ID");
-				String marque = st.getString("Marque");
-				String modele = st.getString("Modele");
-				Long cylindree = st.getLong("Cylindree");
+				Long id = st.getLong("id");
+				String name = st.getString("name");
+				int budget = st.getInt("budget");
 				/* ... */
-				Moteur moteur = new Moteur(id, marque, modele, cylindree);
-				list.add(moteur);
+				Equipe equipe = new Equipe(id, name, budget);
+				list.add(equipe);
 			}
 			return list;
 		} catch (Exception e) {
@@ -49,7 +48,7 @@ public class MoteurDao implements IDAO<Moteur> {
 	}
 
 	// ---------------FINDByID-------------------------------------
-	public Moteur findById(long pId) throws DaoException {
+	public Equipe findById(long pId) throws DaoException {
 
 		try {
 			Connection cnx = JDBCManager.getInstance().openConection();
@@ -57,15 +56,15 @@ public class MoteurDao implements IDAO<Moteur> {
 			prStatement.setLong(1, pId);
 			ResultSet st = prStatement.executeQuery();
 
-			Moteur moteur = null;
+			Equipe equipe = null;
 			while (st.next()) {
 				Long id = st.getLong("id");
-				String marque = st.getString("Marque");
-				String modele = st.getString("Modele");
-				int cylindree = st.getInt("Cylindree");
-				moteur = new Moteur(id, marque, modele, cylindree);
+				String name = st.getString("name");
+				int budget = st.getInt("budget");
+
+				equipe = new Equipe(id, name, budget);
 			}
-			return moteur;
+			return equipe;
 		} catch (Exception e) {
 			throw new DaoException(e);
 		} finally {
@@ -79,14 +78,14 @@ public class MoteurDao implements IDAO<Moteur> {
 
 	@Override
 	// ----------------------CREATE-------------------------------------
-	public Moteur create(Moteur pT) throws Exception {
-		if (pT == null)
+	public Equipe create(Equipe pT) throws Exception {
+		if (pT == null) {
 			return null;
+		}
 		Connection cnx = JDBCManager.getInstance().openConection();
 		PreparedStatement prStatement = cnx.prepareStatement(sql_Insert, PreparedStatement.RETURN_GENERATED_KEYS);
-		prStatement.setString(1, pT.getMarque());
-		prStatement.setString(2, pT.getModele());
-		prStatement.setLong(3, pT.getCylindree());
+		prStatement.setString(1, pT.getName());
+		prStatement.setInt(2, pT.getBugdet());
 		prStatement.execute();
 
 		ResultSet rs = prStatement.getGeneratedKeys();
@@ -101,14 +100,14 @@ public class MoteurDao implements IDAO<Moteur> {
 
 	@Override
 	// ---------------------- UPDATE -------------------------------------
-	public Moteur updateById(Moteur pT) throws Exception {
+	public Equipe updateById(Equipe pT) throws Exception {
 		if (pT == null)
 			return null;
 		Connection cnx = JDBCManager.getInstance().openConection();
 
 		PreparedStatement prStatement = cnx.prepareStatement(sql_updateByID);
-		prStatement.setString(1, pT.getMarque());
-		prStatement.setString(2, pT.getModele());
+		prStatement.setString(1, pT.getName());
+		prStatement.setInt(2, pT.getBugdet());
 		prStatement.setLong(3, pT.getId());
 		prStatement.execute();
 		JDBCManager.getInstance().closeConnection();

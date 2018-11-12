@@ -1,1 +1,1 @@
-DROP DATABASE IF EXISTS `voiture_test`;
+DROP DATABASE IF EXISTS `basevelo_test`;
